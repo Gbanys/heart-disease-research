@@ -1,0 +1,19 @@
+[project]
+name = "heart-disease-research"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "apache-airflow>=2.10.5",
+    "bayesian-optimization>=2.0.3",
+    "imblearn>=0.0",
+    "jupyter>=1.1.1",
+    "mlflow>=2.20.3",
+    "pandas>=2.2.3",
+    "scikit-learn>=1.6.1",
+    "scikit-optimize>=0.10.2",
+    "seaborn>=0.13.2",
+    "ucimlrepo>=0.0.7",
+    "xgboost>=2.1.4",
+]

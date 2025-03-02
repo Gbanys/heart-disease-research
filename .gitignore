@@ -1,0 +1,5 @@
+notebooks
+.venv
+logs
+airflow*
+heart-disease-predictor-app/node_modules
