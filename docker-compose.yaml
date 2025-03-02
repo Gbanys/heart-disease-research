@@ -1,0 +1,117 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:13
+    container_name: airflow_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:latest
+    container_name: airflow_redis
+    restart: always
+
+  airflow-webserver:
+    image: apache/airflow:2.7.2
+    container_name: airflow_webserver
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__WEBSERVER__RBAC=True
+      - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn  # Add dependencies
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+    ports:
+      - "8080:8080"
+    command: webserver
+
+  airflow-scheduler:
+    image: apache/airflow:2.7.2
+    container_name: airflow_scheduler
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres:5432/airflow
+      - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn imblearn ucimlrepo
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./data_pipeline:/opt/airflow/data_pipeline
+      - ./data:/opt/airflow/data
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+      - ./mlflow_data:/mlflow
+    command: scheduler
+
+  airflow-worker:
+    image: apache/airflow:2.7.2
+    container_name: airflow_worker
+    restart: always
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=CeleryExecutor
+      - AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres:5432/airflow
+      - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
+      - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres:5432/airflow
+      - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn imblearn ucimlrepo
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./data_pipeline:/opt/airflow/data_pipeline
+      - ./data:/opt/airflow/data
+      - ./plugins:/opt/airflow/plugins
+      - ./mlflow_data:/mlflow
+    command: celery worker
+
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.0.1
+    container_name: mlflow_server
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow_server:5000
+    command: >
+      mlflow server
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root file:///mlflow/mlruns
+      --host 0.0.0.0
+      --port 5000
+    volumes:
+      - ./mlflow_data:/mlflow
+
+
+  bentoml:
+    container_name: bentoml-server
+    image: bentoml
+    build: ./bentoml
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./mlflow_data:/mlflow
+      - ./data:/home/bentoml/data
+      - ./bentoml:/home/bentoml
+
+volumes:
+  postgres_data:

@@ -66,8 +66,8 @@ def split_task(**kwargs):
     features_train, features_test, num_train, num_test = split_the_dataset_into_train_and_test_sets(df_cleaned)
     features_train.to_csv('/tmp/features_train.csv', index=False)
     features_test.to_csv('/tmp/features_test.csv', index=False)
-    num_train.to_csv('/tmp/num_train.csv')
-    num_test.to_csv('/tmp/num_test.csv')
+    num_train.to_csv('/tmp/num_train.csv', index=False)
+    num_test.to_csv('/tmp/num_test.csv', index=False)
 
 
 split_dataset = PythonOperator(

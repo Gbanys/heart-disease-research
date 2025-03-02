@@ -3,3 +3,4 @@ notebooks
 logs
 airflow*
 heart-disease-predictor-app/node_modules
+plugins

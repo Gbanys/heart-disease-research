@@ -52,7 +52,7 @@ def standardize_the_features_of_the_dataset(
 
     scaler.fit(features_train[columns_to_scale])
 
-    joblib.dump(scaler, 'scaler.pkl')
+    joblib.dump(scaler, '/opt/airflow/data/scaler.pkl')
 
     features_train[columns_to_scale] = scaler.transform(features_train[columns_to_scale])
     features_test[columns_to_scale] = scaler.transform(features_test[columns_to_scale])
@@ -70,7 +70,7 @@ def one_hot_encode_features_of_the_dataset(
 
     encoder.fit(features_train[columns_to_encode])
 
-    joblib.dump(encoder, 'onehotencoder.pkl')
+    joblib.dump(encoder, '/opt/airflow/data/onehotencoder.pkl')
     
     features_train_encoded_array = encoder.transform(features_train[columns_to_encode])
     encoded_features_train = pd.DataFrame(
@@ -84,11 +84,11 @@ def one_hot_encode_features_of_the_dataset(
         columns=encoder.get_feature_names_out(columns_to_encode)
     )
 
-    features_train = features_train.reset_index().join(
+    features_train = features_train.reset_index(drop=True).join(
         encoded_features_train
     ).drop(columns=columns_to_encode)
 
-    features_test = features_test.reset_index().join(
+    features_test = features_test.reset_index(drop=True).join(
         encoded_features_test
     ).drop(columns=columns_to_encode)
 

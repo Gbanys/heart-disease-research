@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "apache-airflow>=2.10.5",
     "bayesian-optimization>=2.0.3",
+    "bentoml>=1.4.2",
     "imblearn>=0.0",
     "jupyter>=1.1.1",
     "mlflow>=2.20.3",
