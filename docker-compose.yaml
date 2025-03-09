@@ -101,17 +101,28 @@ services:
     volumes:
       - ./mlflow_data:/mlflow
 
-
   bentoml:
     container_name: bentoml-server
     image: bentoml
     build: ./bentoml
     ports:
-      - "3000:3000"
+      - "3050:3000"
     volumes:
       - ./mlflow_data:/mlflow
       - ./data:/home/bentoml/data
       - ./bentoml:/home/bentoml
+
+
+  react-app:
+    build:
+      context: heart-disease-predictor-app/  # Uses the Dockerfile in the current directory
+      dockerfile: Dockerfile
+    container_name: react_app
+    ports:
+      - "3000:80"  # Map port 80 (inside container) to 3000 (on host)
+    volumes:
+      - ./heart-disease-predictor-app/build:/usr/share/nginx/html  # Mount your local build folder to Nginx's serving directory
+    restart: always
 
 volumes:
   postgres_data:

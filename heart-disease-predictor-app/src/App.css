@@ -1,38 +1,96 @@
-.App {
+/* Reset margins and paddings for html, body, and the root element */
+html, body, #root, .App {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Use Flexbox for the overall layout to fill the entire viewport */
+.layout {
+  display: flex;
+  height: 100vh; /* Full viewport height */
+  overflow: hidden; /* Prevent entire page from scrolling */
+}
+
+/* Sidebar styling */
+.sidebar {
+  width: 25%;       /* Fixed width for the sidebar */
+  background-color: blue;
+  color: white;
+  padding: 20px;
+  box-sizing: border-box;
+  /* Allow sidebar to scroll if its content overflows */
+  overflow-y: auto;
+}
+
+/* Main content takes remaining space */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centers the form */
+  width: 100%;
+  height: 100vh; /* Full viewport height */
+  box-sizing: border-box;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Form should grow and allow scrolling if needed */
+.main-content form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+/* Form group for labels and inputs */
+.main-content .form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 10px; /* Adds spacing between inputs */
+}
+
+/* Inputs fill their container */
+.main-content input {
+  width: 100%;
+  padding: 8px;
+  font-size: 1vw;
+  box-sizing: border-box;
+  border-radius: 5px;
+}
+
+/* Submit button should always be at the bottom */
+button {
+  padding: 10px;
+  font-size: 1vw;
+  background-color: blue;
+  color: white;
+  border: none;
+  cursor: pointer;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+button:hover {
+  background-color: #0056b3;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+.radio-option {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  align-items: center; /* Keeps the text next to the button */
+  gap: 5px; /* Adds space between the radio button and label */
+  margin-left: 3rem;
 }
 
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+input[type="radio"] {
+  margin: 0;
+  width: 16px; /* Adjust size if needed */
+  height: 16px;
 }

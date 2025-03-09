@@ -6,3 +6,7 @@ as root and change any file permissions
 ```docker exec -it --user root airflow-scheduler bash```
 
 ```docker exec -it --user root airflow-worker bash```
+
+Before doing docker compose up -d make sure that the PostgreSQL database is initialized:
+
+```docker compose run --rm airflow-scheduler airflow db init```

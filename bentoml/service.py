@@ -13,6 +13,17 @@ columns_to_encode = ["cp", "exang", "slope"]
 @bentoml.service(
     resources={"cpu": "2"},
     traffic={"timeout": 30},
+    http={
+    "cors": {
+        "enabled": True,
+        "access_control_allow_origins": ["*"],
+        "access_control_allow_methods": ["GET", "OPTIONS", "POST", "HEAD", "PUT"],
+        "access_control_allow_credentials": True,
+        "access_control_allow_headers": ["*"],
+        "access_control_max_age": 1200,
+        "access_control_expose_headers": ["Content-Length"]
+    }
+    }
 )
 class HeartDiseaseClassifier:
     bento_model = bentoml.models.get("heart_disease_predictor:latest")
