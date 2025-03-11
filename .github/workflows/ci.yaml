@@ -49,7 +49,8 @@ jobs:
           helm upgrade --install airflow ./kubernetes/airflow \
             --namespace airflow \
             --create-namespace \
-            --set image.repository=${{ secrets.ACR_LOGIN_SERVER }}/airflow-custom,image.tag=latest \
+            --set image.registry=${{ secrets.ACR_LOGIN_SERVER }}
+            --set image.repository=airflow-custom,image.tag=latest \
             --set extraEnvVars[0].name=STORAGE_ACCOUNT_NAME,extraEnvVars[0].value=${{ secrets.STORAGE_ACCOUNT_NAME }} \
             --set extraEnvVars[1].name=CONTAINER_NAME,extraEnvVars[1].value=${{ secrets.CONTAINER_NAME }} \
             --set extraEnvVars[2].name=AZURE_STORAGE_CONNECTION_STRING,extraEnvVars[2].value=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} \
