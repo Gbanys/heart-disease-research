@@ -52,6 +52,11 @@ services:
       - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
       - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres:5432/airflow
       - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn imblearn ucimlrepo
+      - ENVIRONMENT=local
+      - STORAGE_ACCOUNT_NAME=storageaccount
+      - CONTAINER_NAME=container
+      - AZURE_STORAGE_CONNECTION_STRING=connectionstring
+      - MLFLOW_TRACKING_URI=http://mlflow_server:5000
     volumes:
       - ./dags:/opt/airflow/dags
       - ./data_pipeline:/opt/airflow/data_pipeline
@@ -74,6 +79,11 @@ services:
       - AIRFLOW__CELERY__BROKER_URL=redis://redis:6379/0
       - AIRFLOW__CELERY__RESULT_BACKEND=db+postgresql://airflow:airflow@postgres:5432/airflow
       - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn imblearn ucimlrepo
+      - ENVIRONMENT=local
+      - STORAGE_ACCOUNT_NAME=storageaccount
+      - CONTAINER_NAME=container
+      - AZURE_STORAGE_CONNECTION_STRING=connectionstring
+      - MLFLOW_TRACKING_URI=http://mlflow_server:5000
     volumes:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
@@ -107,6 +117,12 @@ services:
     build: ./bentoml
     ports:
       - "3050:3000"
+    environment:
+      MLFLOW_TRACKING_URI: http://mlflow_server:5000
+      ENVIRONMENT: local
+      STORAGE_ACCOUNT_NAME: storageaccount
+      CONTAINER_NAME: container
+      AZURE_STORAGE_CONNECTION_STRING: connectionstring
     volumes:
       - ./mlflow_data:/mlflow
       - ./data:/home/bentoml/data

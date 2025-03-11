@@ -1,6 +1,8 @@
 FROM python:3.12-bullseye
 
-RUN pip install scikit-learn==1.3.2 bentoml mlflow dill
+COPY requirements.txt /tmp/
+RUN pip install -r /tmp/requirements.txt
+RUN mkdir /mlflow
 
 COPY . /home/bentoml
 WORKDIR /home/bentoml

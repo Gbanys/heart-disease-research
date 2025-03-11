@@ -1,0 +1,6 @@
+scikit-learn==1.3.2
+bentoml
+mlflow
+dill
+azure-storage-blob
+azure-identity

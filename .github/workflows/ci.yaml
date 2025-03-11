@@ -1,0 +1,56 @@
+name: Build, Push and Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Login to Azure using a service principal (set in your repo secrets)
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      # 3. Login to Azure Container Registry
+      - name: Login to ACR
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ secrets.ACR_LOGIN_SERVER }}  # e.g. myregistry.azurecr.io
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      # 4. Build and push Docker image to ACR
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/airflow-custom:latest
+
+      # 5. Set AKS context so kubectl and Helm commands work
+      - name: Set AKS context
+        uses: azure/aks-set-context@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
+          resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
+
+      # 6. Deploy to AKS using Helm
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install airflow ./kubernetes/airflow \
+            --namespace airflow \
+            --set image.repository=${{ secrets.ACR_LOGIN_SERVER }}/airflow-custom,image.tag=latest \
+            --set extraEnvVars[0].name=STORAGE_ACCOUNT_NAME,extraEnvVars[0].value=${{ secrets.STORAGE_ACCOUNT_NAME }} \
+            --set extraEnvVars[1].name=CONTAINER_NAME,extraEnvVars[1].value=${{ secrets.CONTAINER_NAME }} \
+            --set extraEnvVars[2].name=AZURE_STORAGE_CONNECTION_STRING,extraEnvVars[2].value=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} \
+            --set extraEnvVars[3].name=MLFLOW_TRACKING_URI,extraEnvVars[3].value=${{ secrets.MLFLOW_TRACKING_URI }} \
+            --wait --timeout 10m --create-namespace

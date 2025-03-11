@@ -7,6 +7,28 @@ as root and change any file permissions
 
 ```docker exec -it --user root airflow-worker bash```
 
-Before doing docker compose up -d make sure that the PostgreSQL database is initialized:
+Make sure that the PostgreSQL database is initialized before firing up all the containers:
 
 ```docker compose run --rm airflow-scheduler airflow db init```
+
+Then run all the containers:
+
+```docker compose up -d```
+
+Finally, create an admin user to access Airflow UI:
+
+```
+docker exec -it airflow_webserver airflow users create \
+    --username admin \
+    --firstname Admin \
+    --lastname User \
+    --role Admin \
+    --email admin@example.com \
+    --password admin
+```
+
+In production:
+
+Get the airflow UI password (username is user):
+
+```kubectl get secret --namespace airflow airflow -o jsonpath="{.data.airflow-password}" | base64 --decode``` 

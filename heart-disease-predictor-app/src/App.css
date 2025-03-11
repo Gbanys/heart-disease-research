@@ -10,17 +10,37 @@ html, body, #root, .App {
   display: flex;
   height: 100vh; /* Full viewport height */
   overflow: hidden; /* Prevent entire page from scrolling */
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 /* Sidebar styling */
 .sidebar {
+  display: flex;
+  flex-direction: column;
   width: 25%;       /* Fixed width for the sidebar */
-  background-color: blue;
+  background-color: rgb(24, 24, 24);
   color: white;
   padding: 20px;
   box-sizing: border-box;
   /* Allow sidebar to scroll if its content overflows */
   overflow-y: auto;
+}
+
+.sidebar button{
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(18, 18, 18, 0.3);
+  color: white;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  gap: 10px;
+  padding: 10px;
+}
+
+.sidebar button:hover{
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(66, 65, 65, 0.3);
 }
 
 /* Main content takes remaining space */
@@ -33,6 +53,30 @@ html, body, #root, .App {
   box-sizing: border-box;
   padding: 20px;
   overflow-y: auto;
+  background-color: rgb(45, 44, 44);
+  color: white;
+}
+
+.predict-content {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+}
+
+.negative-prediction-result {
+  color: rgb(19, 176, 19);
+}
+
+.positive-prediction-result {
+  color: rgb(198, 156, 18);
+}
+
+.home-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
 }
 
 /* Form should grow and allow scrolling if needed */
@@ -60,17 +104,31 @@ html, body, #root, .App {
   font-size: 1vw;
   box-sizing: border-box;
   border-radius: 5px;
+  background-color: rgb(103, 102, 102);
+  color: white;
 }
 
 /* Submit button should always be at the bottom */
-button {
+.predict-content button {
+  display: flex;
+  align-self: center;
+  align-items: center;
+  justify-content: center;
   padding: 10px;
   font-size: 1vw;
-  background-color: blue;
+  background-color: rgb(26, 26, 26);
   color: white;
   border: none;
   cursor: pointer;
   text-align: center;
+  width: 50%;
+  border-radius: 10px;
+  margin-top: 5px;
+}
+
+.predict-content button:hover{
+  transition: all 0.3s ease-in-out;
+  background-color: rgba(84, 83, 83, 0.3);
 }
 
 .form-group label {

@@ -7,19 +7,47 @@ import pandas as pd
 import joblib
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, f1_score
+from azure.storage.blob import BlobServiceClient
+from io import StringIO
+import os
 
-# MLflow Tracking URI (replace with your MLflow server URI if remote)
-MLFLOW_TRACKING_URI = "http://mlflow_server:5000"  # Change this if MLflow runs on a different host
+STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
+CONTAINER_NAME = os.getenv("CONTAINER_NAME")
+CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI")
 
 # Set MLflow Tracking URI
 mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
 
+def download_from_azure(blob_name):
+    """Downloads a CSV file from Azure Blob Storage and returns it as a DataFrame"""
+    try:
+        # Initialize Azure Blob Client
+        blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING)
+        blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
+
+        # Download CSV data
+        stream = blob_client.download_blob().readall()
+        csv_data = stream.decode("utf-8")
+
+        # Convert CSV data into a Pandas DataFrame
+        return pd.read_csv(StringIO(csv_data))
+    
+    except Exception as e:
+        print(f"Error downloading {blob_name}: {str(e)}")
+        return None
+
 # Data Loading Function
 def load_data():
-    train_df = pd.read_csv("/opt/airflow/data/train_data.csv")
-    test_df = pd.read_csv("/opt/airflow/data/test_data.csv")
+    """Loads training and testing datasets from Azure Storage"""
+    train_df = download_from_azure("train_data.csv")
+    test_df = download_from_azure("test_data.csv")
+
+    # Save locally for further processing if needed
     train_df.to_csv("/tmp/train_data.csv", index=False)
     test_df.to_csv("/tmp/test_data.csv", index=False)
+
+    return train_df, test_df
 
 # Model Training Function
 def train_model():

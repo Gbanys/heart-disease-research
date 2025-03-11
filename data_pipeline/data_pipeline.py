@@ -5,6 +5,24 @@ from ucimlrepo import fetch_ucirepo
 from imblearn.over_sampling import SMOTE
 import pandas as pd
 import joblib
+import os
+from azure.storage.blob import BlobServiceClient
+
+STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
+CONTAINER_NAME = os.getenv("CONTAINER_NAME")
+CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+
+
+def upload_to_azure(blob_name, data):
+    """Uploads a CSV string to Azure Blob Storage"""
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(CONNECTION_STRING)
+        blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
+        blob_client.upload_blob(data, overwrite=True)
+        print(f"Successfully uploaded {blob_name} to Azure Storage")
+    
+    except Exception as e:
+        print(f"Error uploading {blob_name}: {str(e)}")
 
 def fetch_heart_disease_dataset_from_ucimlrepo():
     # fetch dataset 
@@ -52,7 +70,22 @@ def standardize_the_features_of_the_dataset(
 
     scaler.fit(features_train[columns_to_scale])
 
-    joblib.dump(scaler, '/opt/airflow/data/scaler.pkl')
+    temp_file_path = "/tmp/scaler.pkl"
+    joblib.dump(scaler, temp_file_path)
+
+    if os.getenv("ENVIRONMENT") == "local":
+        joblib.dump(scaler, '/opt/airflow/data/scaler.pkl')
+    else:
+        try:
+            with open(temp_file_path, "rb") as data:
+                upload_to_azure("scaler.pkl", data)
+
+        except Exception as e:
+            print(f"Error uploading scaler to Azure Blob Storage: {e}")
+
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
 
     features_train[columns_to_scale] = scaler.transform(features_train[columns_to_scale])
     features_test[columns_to_scale] = scaler.transform(features_test[columns_to_scale])
@@ -70,7 +103,22 @@ def one_hot_encode_features_of_the_dataset(
 
     encoder.fit(features_train[columns_to_encode])
 
-    joblib.dump(encoder, '/opt/airflow/data/onehotencoder.pkl')
+    temp_file_path = "/tmp/onehotencoder.pkl"
+    joblib.dump(encoder, temp_file_path)
+
+    if os.getenv("ENVIRONMENT") == "local":
+        joblib.dump(encoder, '/opt/airflow/data/onehotencoder.pkl')
+    else:
+        try:
+            with open(temp_file_path, "rb") as data:
+                upload_to_azure("onehotencoder.pkl", data)
+
+        except Exception as e:
+            print(f"Error uploading scaler to Azure Blob Storage: {e}")
+
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
     
     features_train_encoded_array = encoder.transform(features_train[columns_to_encode])
     encoded_features_train = pd.DataFrame(
@@ -104,8 +152,15 @@ def export_preprocessed_dataset(
     train_dataframe = features_train.join(num_train)
     test_dataframe = features_test.join(num_test)
 
-    train_dataframe.to_csv("/opt/airflow/data/train_data.csv")
-    test_dataframe.to_csv("/opt/airflow/data/test_data.csv")
+    if os.getenv("ENVIRONMENT") == "local":
+        train_dataframe.to_csv("/opt/airflow/data/train_data.csv")
+        test_dataframe.to_csv("/opt/airflow/data/test_data.csv")
+    else:
+        train_csv = train_dataframe.to_csv(index=False)
+        test_csv = test_dataframe.to_csv(index=False)
+
+        upload_to_azure("train_data.csv", train_csv)
+        upload_to_azure("test_data.csv", test_csv)
 
 
 

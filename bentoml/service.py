@@ -3,9 +3,39 @@ from bentoml.io import JSON
 import numpy as np
 import pandas as pd
 import joblib
+import os
+from azure.storage.blob import BlobServiceClient
 
-scaler = joblib.load("data/scaler.pkl")
-encoder = joblib.load("data/onehotencoder.pkl")
+# Environment variables for storage account
+STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
+CONTAINER_NAME = os.getenv("CONTAINER_NAME", "data")
+AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
+
+def download_blob(blob_name, download_path):
+    """Downloads a blob from Azure Storage to a local file."""
+    blob_client = blob_service_client.get_blob_client(container=CONTAINER_NAME, blob=blob_name)
+
+    with open(download_path, "wb") as download_file:
+        download_file.write(blob_client.download_blob().readall())
+
+# Initialize Azure BlobServiceClient
+if os.getenv("ENVIRONMENT") != "local":
+    blob_service_client = BlobServiceClient.from_connection_string(AZURE_STORAGE_CONNECTION_STRING)
+
+    # Define paths for local storage
+    scaler_path = "/tmp/scaler.pkl"
+    encoder_path = "/tmp/onehotencoder.pkl"
+
+    # Download the pkl files from Azure Storage
+    download_blob("scaler.pkl", scaler_path)
+    download_blob("onehotencoder.pkl", encoder_path)
+
+    # Load the models
+    scaler = joblib.load(scaler_path)
+    encoder = joblib.load(encoder_path)
+else:
+    scaler = joblib.load("data/scaler.pkl")
+    encoder = joblib.load("data/onehotencoder.pkl")
 
 columns_to_scale = ["age", "trestbps", "thalach", "oldpeak", "thal", "ca"]
 columns_to_encode = ["cp", "exang", "slope"]

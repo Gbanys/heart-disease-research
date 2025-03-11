@@ -1,0 +1,139 @@
+affinity: {}
+artifactRoot:
+  azureBlob:
+    accessKey: ""
+    connectionString: ""
+    container: ""
+    enabled: true
+    path: ""
+    storageAccount: ""
+  gcs:
+    bucket: ""
+    enabled: false
+    path: ""
+  proxiedArtifactStorage: false
+  s3:
+    awsAccessKeyId: ""
+    awsSecretAccessKey: ""
+    bucket: ""
+    enabled: false
+    path: ""
+auth:
+  adminPassword: ""
+  adminUsername: ""
+  appName: basic-auth
+  authorizationFunction: mlflow.server.auth:authenticate_request_basic_auth
+  configFile: basic_auth.ini
+  configPath: /etc/mlflow/auth/
+  defaultPermission: READ
+  enabled: false
+  postgres:
+    database: ""
+    driver: ""
+    enabled: false
+    host: ""
+    password: ""
+    port: 5432
+    user: ""
+  sqliteFile: basic_auth.db
+  sqliteFullPath: ""
+backendStore:
+  databaseConnectionCheck: false
+  databaseMigration: false
+  mysql:
+    database: ""
+    driver: pymysql
+    enabled: false
+    host: ""
+    password: ""
+    port: 3306
+    user: ""
+  postgres:
+    database: ""
+    driver: ""
+    enabled: false
+    host: ""
+    password: ""
+    port: 5432
+    user: ""
+extraArgs: {}
+extraContainers: []
+extraEnvVars: []
+extraFlags: []
+extraSecretNamesForEnvFrom: []
+extraVolumeMounts: []
+extraVolumes: []
+flaskServerSecretKey: ""
+fullnameOverride: ""
+image:
+  pullPolicy: IfNotPresent
+  repository: burakince/mlflow
+  tag: ""
+imagePullSecrets: []
+ingress:
+  annotations: {}
+  className: ""
+  enabled: false
+  hosts:
+  - host: chart-example.local
+    paths:
+    - path: /
+      pathType: ImplementationSpecific
+  tls: []
+initContainers: []
+ldapAuth:
+  adminGroupDistinguishedName: ""
+  enabled: false
+  encodedTrustedCACertificate: ""
+  externalSecretForTrustedCACertificate: ""
+  groupAttribute: dn
+  lookupBind: ""
+  searchBaseDistinguishedName: ""
+  searchFilter: (&(objectclass=groupOfUniqueNames)(uniquemember=%s))
+  tlsVerification: required
+  uri: ""
+  userGroupDistinguishedName: ""
+livenessProbe:
+  failureThreshold: 5
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 3
+nameOverride: ""
+nodeSelector: {}
+podAnnotations: {}
+podSecurityContext: {}
+readinessProbe:
+  failureThreshold: 5
+  initialDelaySeconds: 10
+  periodSeconds: 30
+  timeoutSeconds: 3
+replicaCount: 1
+resources: {}
+securityContext: {}
+service:
+  annotations: {}
+  name: http
+  port: 5000
+  type: LoadBalancer
+serviceAccount:
+  annotations: {}
+  automount: true
+  create: true
+  name: ""
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  labels:
+    release: prometheus
+  metricRelabelings: []
+  namespace: monitoring
+  targetLabels: []
+  telemetryPath: /metrics
+  timeout: 10s
+  useServicePort: false
+strategy:
+  rollingUpdate:
+    maxSurge: 100%
+    maxUnavailable: 0
+  type: RollingUpdate
+tolerations: []

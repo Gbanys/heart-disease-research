@@ -1,6 +1,10 @@
 notebooks
 .venv
 logs
-airflow*
 heart-disease-predictor-app/node_modules
 plugins
+
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
