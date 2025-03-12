@@ -2028,7 +2028,27 @@ worker:
   args: []
   ## @param worker.extraEnvVars Array with extra environment variables to add Airflow worker pods
   ##
-  extraEnvVars: []
+  extraEnvVars:
+    - name: ENVIRONMENT
+      valueFrom:
+        secretKeyRef:
+          name: airflow-secrets
+          key: ENVIRONMENT
+    - name: STORAGE_ACCOUNT_CONNECTION_STRING
+      valueFrom:
+        secretKeyRef:
+          name: airflow-secrets
+          key: STORAGE_ACCOUNT_CONNECTION_STRING
+    - name: CONTAINER_NAME
+      valueFrom:
+        secretKeyRef:
+          name: airflow-secrets
+          key: CONTAINER_NAME
+    - name: MLFLOW_TRACKING_URI
+      valueFrom:
+        secretKeyRef:
+          name: airflow-secrets
+          key: MLFLOW_TRACKING_URI
   ## @param worker.extraEnvVarsCM ConfigMap containing extra environment variables for Airflow worker pods
   ##
   extraEnvVarsCM: ""
