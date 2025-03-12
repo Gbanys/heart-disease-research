@@ -51,9 +51,10 @@ jobs:
             --create-namespace \
             --set image.registry=${{ secrets.ACR_LOGIN_SERVER }} \
             --set image.repository=airflow-custom,image.tag=latest \
-            --set extraEnvVars[0].name=STORAGE_ACCOUNT_NAME,extraEnvVars[0].value="${{ secrets.STORAGE_ACCOUNT_NAME }}" \
-            --set extraEnvVars[1].name=CONTAINER_NAME,extraEnvVars[1].value="${{ secrets.CONTAINER_NAME }}" \
-            --set extraEnvVars[2].name=AZURE_STORAGE_CONNECTION_STRING,extraEnvVars[2].value="${{ secrets.AZURE_STORAGE_CONNECTION_STRING }}" \
-            --set extraEnvVars[3].name=MLFLOW_TRACKING_URI,extraEnvVars[3].value="${{ secrets.MLFLOW_TRACKING_URI }}" \
+            --set worker.environment=${{ secrets.ENVIRONMENT }} \
+            --set worker.azure_storage_connection_string=${{ secrets.STORAGE_ACCOUNT_CONNECTION_STRING }} \
+            --set worker.container_name=${{ secrets.CONTAINER_NAME }} \
+            --set worker.mlflow_tracking_uri=${{ secrets.MLFLOW_TRACKING_URI }} \
+            --set worker.storage_account_name=${{ secrets.STORAGE_ACCOUNT_NAME }} \
             --wait --timeout 10m
 
