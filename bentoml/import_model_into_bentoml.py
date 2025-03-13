@@ -6,7 +6,9 @@ mlflow.set_tracking_uri(os.getenv("MLFLOW_TRACKING_URI"))
 
 from mlflow.tracking import MlflowClient
 
-client = MlflowClient()
+client = MlflowClient(
+    tracking_uri=os.getenv("MLFLOW_TRACKING_URI")
+)
 model_versions = client.get_latest_versions("HeartDiseasePredictor")
 if not model_versions:
     raise ValueError("No registered model versions found!")
