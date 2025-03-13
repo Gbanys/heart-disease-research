@@ -126,16 +126,6 @@ spec:
             {{- if .Values.worker.extraEnvVars }}
             {{- include "common.tplvalues.render" (dict "value" .Values.worker.extraEnvVars "context" $) | nindent 12 }}
             {{- end }}
-            - name: ENVIRONMENT
-              value: {{ .Values.worker.environment }}
-            - name: AZURE_STORAGE_CONNECTION_STRING
-              value: {{ .Values.worker.azure_storage_connection_string }}
-            - name: CONTAINER_NAME
-              value: {{ .Values.worker.container_name }}
-            - name: MLFLOW_TRACKING_URI
-              value: {{ .Values.worker.mlflow_tracking_uri }}
-            - name: STORAGE_ACCOUNT_NAME
-              value: {{ .Values.worker.storage_account_name }}
           {{- if or .Values.worker.extraEnvVarsCM .Values.worker.extraEnvVarsSecret .Values.worker.extraEnvVarsSecrets .Values.extraEnvVarsCM .Values.extraEnvVarsSecret .Values.extraEnvVarsSecrets }}
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
