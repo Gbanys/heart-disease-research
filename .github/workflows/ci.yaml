@@ -28,12 +28,26 @@ jobs:
           password: ${{ secrets.ACR_PASSWORD }}
 
       # 4. Build and push Docker image to ACR
-      - name: Build and push Docker image
+      - name: Build and push Airflow Docker image
         uses: docker/build-push-action@v3
         with:
           context: .
           push: true
           tags: ${{ secrets.ACR_LOGIN_SERVER }}/airflow-custom:latest
+
+      - name: Build and push BentoML Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: bentoml
+          push: true
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/bentoml:latest
+
+      - name: Build and push ReactApp Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: heart-disease-predictor-app
+          push: true
+          tags: ${{ secrets.ACR_LOGIN_SERVER }}/react-app:latest
 
       # 5. Set AKS context so kubectl and Helm commands work
       - name: Set AKS context
@@ -43,8 +57,43 @@ jobs:
           cluster-name: ${{ secrets.AKS_CLUSTER_NAME }}
           resource-group: ${{ secrets.AKS_RESOURCE_GROUP }}
 
-      # 6. Deploy to AKS using Helm
-      - name: Deploy with Helm
+      - name: Deploy MLFlow with Helm
+        run: |
+          helm repo add community-charts https://community-charts.github.io/helm-charts
+          helm repo update
+          helm upgrade --install mlflow community-charts/mlflow \
+            --namespace mlflow \
+            --create-namespace \
+            --set artifactRoot.azureBlob.accessKey=${{ secrets.STORAGE_ACCESS_KEY }} \
+            --set artifactRoot.azureBlob.connectionString=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} \
+            --set artifactRoot.azureBlob.container=${{ secrets.CONTAINER_NAME }} \
+            --set artifactRoot.azureBlob.enabled=true \
+            --set artifactRoot.azureBlob.storageAccount=${{ secrets.STORAGE_ACCOUNT_NAME }}
+            
+      - name: Deploy BentoML with Helm
+        run: |
+          helm upgrade --install bentoml ./kubernetes/bentoml \
+            --namespace bentoml \
+            --create-namespace \
+            --set worker.extraEnvVars[0].name="ENVIRONMENT" \
+            --set worker.extraEnvVars[0].value=${{ secrets.ENVIRONMENT }} \
+            --set worker.extraEnvVars[1].name="AZURE_STORAGE_CONNECTION_STRING" \
+            --set worker.extraEnvVars[1].value=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} \
+            --set worker.extraEnvVars[2].name="CONTAINER_NAME" \
+            --set worker.extraEnvVars[2].value=${{ secrets.CONTAINER_NAME }} \
+            --set worker.extraEnvVars[3].name="STORAGE_ACCOUNT_NAME" \
+            --set worker.extraEnvVars[3].value=${{ secrets.STORAGE_ACCOUNT_NAME }} \
+            --set worker.extraEnvVars[4].name="MLFLOW_TRACKING_URI" \
+            --set worker.extraEnvVars[4].value=${{ secrets.MLFLOW_TRACKING_URI }}
+
+      - name: Deploy ReactApp with Helm
+        run: |
+          helm upgrade --install react-app ./kubernetes/frontend \
+            --namespace default \
+            --set extraEnvVars[0].name="BENTOML_SERVICE_URL" \
+            --set extraEnvVars[0].value=${{ secrets.BENTOML_SERVICE_URL }}
+
+      - name: Deploy Airflow with Helm
         run: |
           helm upgrade --install airflow ./kubernetes/airflow \
             --namespace airflow \
