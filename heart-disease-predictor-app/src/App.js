@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FaHome, FaChartLine } from "react-icons/fa";
 import './App.css';
 
+const BENTOML_SERVICE_URL = process.env.BENTOML_SERVICE_URL;
+
 function App() {
   const [activeView, setActiveView] = useState("home");
 
@@ -57,7 +59,7 @@ function App() {
     }
 
     try {
-      const response = await fetch("http://localhost:3050/predict", {
+      const response = await fetch(`${BENTOML_SERVICE_URL}/predict`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(inputData),

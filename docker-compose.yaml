@@ -139,6 +139,8 @@ services:
     volumes:
       - ./heart-disease-predictor-app/build:/usr/share/nginx/html  # Mount your local build folder to Nginx's serving directory
     restart: always
+    environment:
+      - BENTOML_SERVICE_URL=http://localhost:3050  # Define environment variable
 
 volumes:
   postgres_data:
