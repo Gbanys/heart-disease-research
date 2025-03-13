@@ -68,7 +68,8 @@ jobs:
             --set artifactRoot.azureBlob.connectionString=${{ secrets.AZURE_STORAGE_CONNECTION_STRING }} \
             --set artifactRoot.azureBlob.container=${{ secrets.CONTAINER_NAME }} \
             --set artifactRoot.azureBlob.enabled=true \
-            --set artifactRoot.azureBlob.storageAccount=${{ secrets.STORAGE_ACCOUNT_NAME }}
+            --set artifactRoot.azureBlob.storageAccount=${{ secrets.STORAGE_ACCOUNT_NAME }} \
+            --set service.type=LoadBalancer
             
       - name: Deploy BentoML with Helm
         run: |
