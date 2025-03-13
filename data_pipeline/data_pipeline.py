@@ -9,7 +9,7 @@ import os
 from azure.storage.blob import BlobServiceClient
 
 STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
-CONTAINER_NAME = os.getenv("CONTAINER_NAME")
+CONTAINER_NAME = os.getenv("DATA_CONTAINER_NAME")
 CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 
 

@@ -8,7 +8,7 @@ from azure.storage.blob import BlobServiceClient
 
 # Environment variables for storage account
 STORAGE_ACCOUNT_NAME = os.getenv("STORAGE_ACCOUNT_NAME")
-CONTAINER_NAME = os.getenv("CONTAINER_NAME", "data")
+CONTAINER_NAME = os.getenv("DATA_CONTAINER_NAME", "data")
 AZURE_STORAGE_CONNECTION_STRING = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 
 def download_blob(blob_name, download_path):

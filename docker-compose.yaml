@@ -54,7 +54,7 @@ services:
       - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn imblearn ucimlrepo
       - ENVIRONMENT=local
       - STORAGE_ACCOUNT_NAME=storageaccount
-      - CONTAINER_NAME=container
+      - DATA_CONTAINER_NAME=container
       - AZURE_STORAGE_CONNECTION_STRING=connectionstring
       - MLFLOW_TRACKING_URI=http://mlflow_server:5000
     volumes:
@@ -81,7 +81,7 @@ services:
       - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn imblearn ucimlrepo
       - ENVIRONMENT=local
       - STORAGE_ACCOUNT_NAME=storageaccount
-      - CONTAINER_NAME=container
+      - DATA_CONTAINER_NAME=container
       - AZURE_STORAGE_CONNECTION_STRING=connectionstring
       - MLFLOW_TRACKING_URI=http://mlflow_server:5000
     volumes:
@@ -121,7 +121,7 @@ services:
       MLFLOW_TRACKING_URI: http://mlflow_server:5000
       ENVIRONMENT: local
       STORAGE_ACCOUNT_NAME: storageaccount
-      CONTAINER_NAME: container
+      DATA_CONTAINER_NAME: container
       AZURE_STORAGE_CONNECTION_STRING: connectionstring
     volumes:
       - ./mlflow_data:/mlflow
