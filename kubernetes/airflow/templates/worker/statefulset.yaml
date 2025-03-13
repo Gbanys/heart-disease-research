@@ -119,6 +119,13 @@ spec:
               value: {{ include "airflow.redis.host" . | quote }}
             - name: REDIS_PORT_NUMBER
               value: {{ include "airflow.redis.port" . | quote }}
+            {{- end }}
+            {{- if .Values.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
+            {{- if .Values.worker.extraEnvVars }}
+            {{- include "common.tplvalues.render" (dict "value" .Values.worker.extraEnvVars "context" $) | nindent 12 }}
+            {{- end }}
             - name: ENVIRONMENT
               value: {{ .Values.worker.environment }}
             - name: AZURE_STORAGE_CONNECTION_STRING
@@ -129,13 +136,6 @@ spec:
               value: {{ .Values.worker.mlflow_tracking_uri }}
             - name: STORAGE_ACCOUNT_NAME
               value: {{ .Values.worker.storage_account_name }}
-            {{- end }}
-            {{- if .Values.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
-            {{- if .Values.worker.extraEnvVars }}
-            {{- include "common.tplvalues.render" (dict "value" .Values.worker.extraEnvVars "context" $) | nindent 12 }}
-            {{- end }}
           {{- if or .Values.worker.extraEnvVarsCM .Values.worker.extraEnvVarsSecret .Values.worker.extraEnvVarsSecrets .Values.extraEnvVarsCM .Values.extraEnvVarsSecret .Values.extraEnvVarsSecrets }}
           envFrom:
             {{- if .Values.extraEnvVarsCM }}
