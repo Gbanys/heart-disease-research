@@ -48,10 +48,6 @@ resource "azurerm_kubernetes_cluster" "aks_cluster" {
   identity {
     type = "SystemAssigned"
   }
-
-  key_vault_secrets_provider{
-    secret_rotation_enabled = false
-  }
 }
 
 resource "azurerm_role_assignment" "aks_container_registry_role_assignment" {
@@ -67,13 +63,6 @@ resource "azurerm_role_assignment" "mlflow_role_assignment" {
   principal_id         = azurerm_kubernetes_cluster.aks_cluster.kubelet_identity[0].object_id
   skip_service_principal_aad_check = true
 }
-
-resource "azurerm_role_assignment" "aks_kv_role_assignment" {
-  principal_id      = azurerm_kubernetes_cluster.aks_cluster.identity[0].principal_id
-  role_definition_name = "Key Vault Secrets User"
-  scope             = "/subscriptions/8d61b7e0-a087-4fd4-870a-83db896d37cd/resourceGroups/key-vault-group/providers/Microsoft.KeyVault/vaults/heart-disease-app-vault"
-}
-
 
 output "kube_config" {
   value     = azurerm_kubernetes_cluster.aks_cluster.kube_config_raw
