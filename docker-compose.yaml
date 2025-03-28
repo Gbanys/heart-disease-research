@@ -32,9 +32,9 @@ services:
       - AIRFLOW__WEBSERVER__RBAC=True
       - _PIP_ADDITIONAL_REQUIREMENTS=mlflow pandas scikit-learn  # Add dependencies
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - ./plugins:/opt/airflow/plugins
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
     ports:
       - "8080:8080"
     command: webserver
@@ -58,12 +58,12 @@ services:
       - AZURE_STORAGE_CONNECTION_STRING=connectionstring
       - MLFLOW_TRACKING_URI=http://mlflow_server:5000
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./data_pipeline:/opt/airflow/data_pipeline
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/data_pipeline:/opt/airflow/data_pipeline
       - ./data:/opt/airflow/data
-      - ./logs:/opt/airflow/logs
-      - ./plugins:/opt/airflow/plugins
-      - ./mlflow_data:/mlflow
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/plugins:/opt/airflow/plugins
+      - ./airflow/mlflow_data:/mlflow
     command: scheduler
 
   airflow-worker:
@@ -85,11 +85,11 @@ services:
       - AZURE_STORAGE_CONNECTION_STRING=connectionstring
       - MLFLOW_TRACKING_URI=http://mlflow_server:5000
     volumes:
-      - ./dags:/opt/airflow/dags
-      - ./logs:/opt/airflow/logs
-      - ./data_pipeline:/opt/airflow/data_pipeline
+      - ./airflow/dags:/opt/airflow/dags
+      - ./airflow/logs:/opt/airflow/logs
+      - ./airflow/data_pipeline:/opt/airflow/data_pipeline
       - ./data:/opt/airflow/data
-      - ./plugins:/opt/airflow/plugins
+      - ./airflow/plugins:/opt/airflow/plugins
       - ./mlflow_data:/mlflow
     command: celery worker
 
